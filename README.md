@@ -1,5 +1,6 @@
-# split_sg_profile
+# Various Seaglider Scripts
 
+## split_sg_profile.py ##
 Split individual dive profiles based on depth and create basic plots
 
 - Temperature Profile
