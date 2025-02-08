@@ -3,6 +3,7 @@
 # Created by J. Marquardt on 2/8/2024
 # Last edited on 2/8/2024
 #    Need to add climb to T-S diagram and swap sigma-t colorbar for depth or time
+#    Need to add lat-lon map
 
 # Imports
 import os
@@ -77,10 +78,9 @@ def sg_plots(dive_ds, climb_ds):
                     Pressure Profile,
                     Lat-lon Map,
                     Buoyancy Profile,
-                    Polar Heading vs time,
-                    Vertical Speed vs time,
-                    Glide Angle vs time,
-                    Speed vs time
+                    Heading Profile,
+                    Vertical Speed Profile,
+                    Glide Angle Profile,
 
         climb plots (.png): 
                     Depth Profile,
@@ -93,10 +93,9 @@ def sg_plots(dive_ds, climb_ds):
                     Pressure Profile,
                     Lat-lon Map,
                     Buoyancy Profile,
-                    Polar Heading vs time,
-                    Vertical Speed vs time,
-                    Glide Angle vs time,
-                    Speed vs time
+                    Heading Profile,
+                    Vertical Speed Profile,
+                    Glide Angle Profile,
     """
     
     # Depth Profile
