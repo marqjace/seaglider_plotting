@@ -1,5 +1,6 @@
 # Various Seaglider Scripts
 [split_sg_profile.py](#split_sg_profile.py)
+[200kmAvg.ipynb](#200kmAvg.ipynb)
 
 ## split_sg_profile.py ##
 Split individual dive profiles based on depth and create basic plots
@@ -16,3 +17,6 @@ Split individual dive profiles based on depth and create basic plots
 - Heading Profile
 - Vertical Speed Profile
 - Glide Angle Profile
+
+## 200kmAvg.ipynb ##
+Jupyter notebook demonstrating how to calculate the average inner 200km temperature anomaly for the TH line.
