@@ -1,6 +1,6 @@
 # Various Seaglider Scripts
 [split_sg_profile.py](#split_sg_profile.py)
-[200kmAvg.ipynb](#200kmAvg.ipynb)
+[200kmAvg.ipynb](#200kmavg.ipynb)
 
 ## split_sg_profile.py ##
 Split individual dive profiles based on depth and create basic plots
