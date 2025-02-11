@@ -1,9 +1,14 @@
 # Various Seaglider Scripts
-[split_sg_profile.py](#split_sg_profile.py)
+* [sg_plots.py](#sg_plotspy)
+* [split_sg_profile.py](#split_sg_profilepy)
+* [200kmAvg.ipynb](#200kmavgipynb)
+* [TH_line_bathymap.ipynb](#th_line_bathymapipynb)
+* [bathymetry_3D.ipynb](#bathymetry_3dipynb)
+* [concat_netcdf.ipynb](#concat_netcdfipynb)
+* [transects.ipynb](#transectsipynb)
 
-## split_sg_profile.py ##
-Split individual dive profiles based on depth and create basic plots
-
+## sg_plots.py ##
+Creates basic plots on individual dive profiles and puts them into a figures directory.
 - Temperature Profile
 - Salinity Profile
 - Conductivity Profile
@@ -16,3 +21,21 @@ Split individual dive profiles based on depth and create basic plots
 - Heading Profile
 - Vertical Speed Profile
 - Glide Angle Profile
+
+## split_sg_profile.py ##
+Splits seaglider dive data into individual dive profiles.
+
+## 200kmAvg.ipynb ##
+Demonstrates how to calculate the average inner 200km temperature anomaly for the TH line.
+
+## TH_line_bathymap.ipynb ##
+Plots the bathymetry and glider track along the TH line.
+
+## bathymetry_3D.ipynb ## 
+Plots data onto a 3D bathymetry map of the TH line.
+
+## concat_netcdf.ipynb ##
+Example script for how to concatenate individual Seaglider .nc files into one merged NetCDF file.
+
+## transects.ipynb ##
+Example script to plot Seaglider transect contour plots.
