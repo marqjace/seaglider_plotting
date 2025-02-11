@@ -23,7 +23,7 @@ Creates basic plots on individual dive profiles and puts them into a figures dir
 - Glide Angle Profile
 
 ## split_sg_profile.py ##
-Splits seaglider dive data into individual dive profiles.
+Function to split seaglider dive data into individual dive profiles.
 
 ## 200kmAvg.ipynb ##
 Demonstrates how to calculate the average inner 200km temperature anomaly for the TH line.
