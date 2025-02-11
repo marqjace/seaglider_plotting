@@ -6,6 +6,7 @@
 * [bathymetry_3D.ipynb](#bathymetry_3dipynb)
 * [concat_netcdf.ipynb](#concat_netcdfipynb)
 * [transects.ipynb](#transectsipynb)
+* [interpolated_plots.py](#interpolated_plotspy)
 
 ## sg_plots.py ##
 Creates basic plots on individual dive profiles and puts them into a figures directory.
@@ -39,3 +40,6 @@ Example script for how to concatenate individual Seaglider .nc files into one me
 
 ## transects.ipynb ##
 Example script to plot Seaglider transect contour plots.
+
+## interpolated_plots.py ##
+Interpolated plots of seaglider data.
