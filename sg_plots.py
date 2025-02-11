@@ -1,193 +1,203 @@
-# -*- coding: utf-8 -*-
-"""
-Spyder Editor
-
-This is a temporary script file.
-"""
+# Takes indiviual dive files, splits them into dive and climb profiles, and makes some plots.
+# Author: Jace Marquardt
+# Last Updated: 2025-02-11
 
 # Imports
-
+import os
+import math
+import glob
+import xarray as xr
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy
-import xarray as xr
-from scipy import interpolate
-from mpl_toolkits.mplot3d import Axes3D
-
-
-#%%
-# Open Dataset
-
-glider_data = xr.open_dataset("C:/Users/marqjace/OneDrive - Oregon State University/Desktop/Python/p6850630.nc")
-
-
-# Set Variables
-
-lat = glider_data['latitude'].values
-lon = glider_data['longitude'].values
-time = glider_data['time'].values
-temp = glider_data['temperature'].values
-depth = glider_data['depth'].values
-sal = glider_data['salinity'].values
-dens = glider_data['density'].values
-
-
-# Interpolation With Depth
-
-z_new = np.arange(0, 1000, 1)
-f = scipy.interpolate.interp1d(depth, temp, kind='linear', bounds_error=False)
-temp_new = f(z_new)
-
-f = scipy.interpolate.interp1d(depth, sal, kind='linear', bounds_error=False)
-sal_new = f(z_new)
-
-f = scipy.interpolate.interp1d(depth, dens, kind='linear', bounds_error=False)
-dens_new = f(z_new)
-
-f = scipy.interpolate.interp1d(depth, lon, kind='linear', bounds_error=False)
-lon_new = f(z_new)
-
-f = scipy.interpolate.interp1d(lon, temp, kind='linear', bounds_error=False)
-temp_new_2 = f(lon_new)
-
-
-#%%
-
-# Set Up Figure (Temperature Profile
-
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 8), dpi=300)
-plt.suptitle('Temperature Profile')
-
-
-# Interpolated Plot
-
-ax1.plot(temp_new, z_new)
-ax1.invert_yaxis()
-ax1.set_ylabel('Depth (m)')
-ax1.set_xlabel('Temperature (deg C)')
-ax1.set_title('Interpolated')
-
-
-# Raw Plot
-
-ax2.plot(temp, depth, c='r')
-ax2.invert_yaxis()
-ax2.set_ylabel('Depth (m)')
-ax2.set_xlabel('Temperature (deg C)')
-ax2.set_title('Raw')
-
-
-# Save Figure
-plt.savefig('C:/Users/marqjace/OneDrive - Oregon State University/Desktop/Python/Figure3.jpg')
-
-#%%
-
-# Set Up Figure2 (Salinity Profile)
-
-fig2, (ax3, ax4) = plt.subplots(1, 2, figsize=(12, 8), dpi=300)
-plt.suptitle('Salinity Profile')
-
-
-# Interpolated Plot
-
-ax3.plot(sal_new, z_new)
-ax3.invert_yaxis()
-ax3.set_ylabel('Depth (m)')
-ax3.set_xlabel('Salinity (PSU)')
-ax3.set_title('Interpolated')
-
-
-# Raw Plot
-
-ax4.plot(sal, depth, c='r')
-ax4.invert_yaxis()
-ax4.set_ylabel('Depth (m)')
-ax4.set_xlabel('Salinity (PSU)')
-ax4.set_title('Raw')
-
-
-# Save Figure
-plt.savefig('C:/Users/marqjace/OneDrive - Oregon State University/Desktop/Python/Figure4.jpg')
-
-
-#%%
-
-# Set Up Figure3 (Density Profile)
-
-fig3, (ax5, ax6) = plt.subplots(1, 2, figsize=(12, 8), dpi=300)
-plt.suptitle('Density Profile')
-
-
-# Interpolated Plot
-
-ax5.plot(dens_new, z_new)
-ax5.invert_yaxis()
-ax5.set_ylabel('Depth (m)')
-ax5.set_xlabel(r'Density (kg/$m^3$)')
-ax5.set_title('Interpolated')
-
-
-# Raw Plot
-
-ax6.plot(dens, depth, c='r')
-ax6.invert_yaxis()
-ax6.set_ylabel('Depth (m)')
-ax6.set_xlabel(r'Density (kg/$m^3$)')
-ax6.set_title('Raw')
-
-
-# Save Figure
-plt.savefig('C:/Users/marqjace/OneDrive - Oregon State University/Desktop/Python/Figure5.jpg')
-
-
-#%%
-
-# Set Up Figure 4 (Colormap Example)
-
-fig4, ax7 = plt.subplots(1, 1, dpi=300)
-
-color_example = ax7.scatter(lon_new, z_new, c=temp_new, cmap='coolwarm')
-ax7.invert_yaxis()
-ax7.set_ylabel('Depth (m)')
-ax7.set_xlabel('Longitude')
-ax7.set_title('Interpolated Profile')
-fig.colorbar(color_example, label=r'Temperature ($\degree$C)')
-plt.savefig('C:/Users/marqjace/OneDrive - Oregon State University/Desktop/Python/Figure6.jpg')
-
-
-#%%
-
-# Set Up Figure 5 (Colormap Example 2)
-
-fig5, ax8 = plt.subplots(1, 1, dpi=300)
-
-color_example2 = ax8.scatter(lon, depth, c=temp, cmap='coolwarm')
-ax8.invert_yaxis()
-ax8.set_ylabel('Depth (m)')
-ax8.set_xlabel('Longitude')
-ax8.set_title('Raw Profile')
-fig.colorbar(color_example2, label=r'Temperature ($\degree$C)')
-plt.savefig('C:/Users/marqjace/OneDrive - Oregon State University/Desktop/Python/Figure7.jpg')
-
-
-#%%
-
-# Set Up Figure 6 (Surface Plot)
-
-Lon, Depth = np.meshgrid(lon, depth)
-# Temp, Depth2 = np.meshgrid(temp, depth)
-#
-# fig6 = plt.figure()
-# ax9 = fig.add_subplot(111, projection='3d')
-# ax9.plot_surface(Lon, Depth, Temp, cmap='coolwarm')
-# plt.savefig('C:/Users/marqjace/OneDrive - Oregon State University/Desktop/Python/Figure8.jpg')
-
-ax9 = fig.add_subplot(111, projection='3d')
-ax9.plot_surface(lon, lat, Depth)
-
-# ax9 = plt.gca()
-# ax9.hold()
-# ax9.scatter(lon, lat, temp)
-plt.savefig('C:/Users/marqjace/OneDrive - Oregon State University/Desktop/Python/Figure8.jpg')
-
-
+from scipy.interpolate import griddata
+from scipy.interpolate import RBFInterpolator
+from split_sg_profile import split_sg_profile
+
+# Open the filepath where the data is located
+filepath = r'C:/Users/marqjace/TH_line/deployments/oct_2024/transect1/'
+os.makedirs(filepath, exist_ok=True)  # exist_ok=True prevents errors if the folder already exists
+
+# Specify which data files you want to open
+data_files = r'p2660*.nc'
+files = glob.glob(filepath + data_files)
+
+# Defines a 'figures' directory to store the output figures
+figures = r'figures/'
+
+# Function to plot seaglider dive and climb profiles
+def sg_plots(files):
+    """
+    Plots seaglider dive and climb profiles.
+    
+    Parameters:
+        files (list): List of dive files.
+        
+    Returns:
+        dive plots (.png): 
+                    Depth Profile,
+                    Temperature Profile,
+                    Salinity Profile,
+                    Conductivity Profile,
+                    T-S Diagram,
+                    Density Profile,
+                    Sigma-t Profile,
+                    Pressure Profile,
+                    Lat-lon Map,
+                    Buoyancy Profile,
+                    Heading Profile,
+                    Vertical Speed Profile,
+                    Glide Angle Profile,
+
+        climb plots (.png): 
+                    Depth Profile,
+                    Temperature Profile,
+                    Salinity Profile,
+                    Conductivity Profile,
+                    T-S Diagram,
+                    Density Profile,
+                    Sigma-t Profile,
+                    Pressure Profile,
+                    Lat-lon Map,
+                    Buoyancy Profile,
+                    Heading Profile,
+                    Vertical Speed Profile,
+                    Glide Angle Profile,
+    """
+
+    datasets = {f'dive_{idx}': xr.open_dataset(file) for idx, file in enumerate(files)}
+
+    # Create plots for each dive
+    for idx, ds in datasets.items():
+
+        # Split the dataset into dive and climb profiles
+        dive, climb = split_sg_profile(ds)
+        
+        # Define dive number
+        dive_num = dive.trajectory.values
+
+        # Create a dictionary with the science variables on the dive
+        science_vars_dive = {
+            'Temperature': dive.temperature,
+            'Salinity': dive.salinity,
+            'Conductivity': dive.conductivity,
+            'Density': dive.density,
+            'Sigma_theta': dive.sigma_t,
+            'Buoyancy': dive.buoyancy,
+            'Vertical Speed': dive.vert_speed,
+            'Glide Angle': dive.glide_angle,
+        }
+
+        science_vars_climb = {
+            'Temperature': climb.temperature,
+            'Salinity': climb.salinity,
+            'Conductivity': climb.conductivity,
+            'Density': climb.density,
+            'Sigma_theta': climb.sigma_t,
+            'Buoyancy': climb.buoyancy,
+            'Vertical Speed': climb.vert_speed,
+            'Glide Angle': climb.glide_angle,
+        }
+
+        # Create output folder
+        output_folder = filepath + figures + f'dive_{dive_num}/'
+        os.makedirs(output_folder, exist_ok=True)  # exist_ok=True prevents errors if the folder already exists
+
+        # Plot depth vs time
+        fig, ax = plt.subplots(figsize=(8,8), dpi=300)
+        ax.plot(dive.ctd_time, dive.ctd_depth, c='r', label='Dive')
+        ax.plot(climb.ctd_time, climb.ctd_depth, c='b', label='Climb')
+        ax.invert_yaxis()
+        ax.set_xlabel('Time (seconds since 1970-01-01)')
+        ax.set_ylabel('Depth (m)')
+        ax.set_title(f'Dive {dive_num} - Depth vs Time')
+        ax.legend()
+        ax.grid()
+        ax.set_facecolor('0.9')
+        fig.savefig(output_folder + f'depth.png')
+        plt.close()
+        
+        # Pressure Profile 
+        fig, ax = plt.subplots(figsize=(8,8), dpi=300)
+        ax.plot(dive.ctd_time, dive.ctd_pressure, label='Dive', c='r')
+        ax.plot(climb.ctd_time, climb.ctd_pressure, label='Climb', c='b')
+        ax.invert_yaxis()
+        ax.set_ylabel(f'Pressure (dbar)')
+        ax.set_xlabel('Time (seconds since 1970-01-01)')
+        ax.set_title('Pressure Profiles')
+        ax.legend()
+        ax.grid()
+        ax.set_facecolor('0.9')
+        fig.savefig(output_folder + 'pressure.png')
+        plt.close()
+
+        # Polar Heading vs time 
+        # Convert from radians E to degrees N and ensure the range is 0-360
+        dive_heading_N = (90 - dive.polar_heading * 180 / math.pi) % 360
+        climb_heading_N = (90 - climb.polar_heading * 180 / math.pi) % 360
+        
+        fig, ax = plt.subplots(figsize=(8,8), dpi=300)
+        ax.plot(dive_heading_N, dive.ctd_depth, label='Dive', c='r')
+        ax.plot(climb_heading_N, climb.ctd_depth, label='Climb', c='b')
+        ax.invert_yaxis()
+        ax.set_xlabel(f'Heading ($\degree$N)')
+        ax.set_ylabel('Depth (m)')
+        ax.set_title('Heading Profiles')
+        ax.legend()
+        ax.grid()
+        ax.set_facecolor('0.9')
+        fig.savefig(output_folder + 'heading_profiles.png') 
+        plt.close()
+
+        # T-S Plot
+        # Define min/max values with an extended range
+        t_min, t_max = dive.temperature.min().values, dive.temperature.max().values
+        s_min, s_max = dive.salinity.min().values, dive.salinity.max().values
+        tempL = np.linspace(t_min - .5, t_max + .5)  # Extended temperature range
+        salL = np.linspace(s_min - .25, s_max + .25)  # Extended salinity range
+        Tg, Sg = np.meshgrid(tempL, salL)
+
+        # Flatten the original data to use with RBFInterpolator
+        points = np.column_stack((dive.salinity.values, dive.temperature.values))
+        values = dive.sigma_t.values
+        interp_func = RBFInterpolator(points, values, smoothing=0.1)  # Adjust smoothing if needed
+
+        # Evaluate interpolation over the full grid
+        grid_points = np.column_stack((Sg.ravel(), Tg.ravel()))
+        sigma_theta_grid = interp_func(grid_points).reshape(Sg.shape)
+
+        # Generate contour levels
+        cnt = np.linspace(np.min(sigma_theta_grid), np.max(sigma_theta_grid), 10)
+
+        # Create figure
+        fig, ax = plt.subplots(figsize=(10, 10))
+        cl = ax.contour(Sg, Tg, sigma_theta_grid, levels=cnt, colors='black', linewidths=0.5)
+        plt.clabel(cl, fontsize=8, fmt="%.1f")
+        sc = ax.scatter(dive.salinity, dive.temperature, c=dive.sigma_t, s=10, cmap='jet_r')
+        cb = plt.colorbar(sc, label=f'Sigma-t (g/$m^3$)')
+        ax.set_xlabel('Salinity (PSU)')
+        ax.set_ylabel('Temperature [$\degree$C]')
+        ax.set_title('T-S Diagram', fontsize=14, fontweight='bold')
+        ax.set_facecolor('0.9')
+        fig.savefig(output_folder + 'TS_plot.png')
+        plt.close()
+
+        # Plot science variables vs depth
+        for var_dive, var_climb in zip(science_vars_dive, science_vars_climb):
+            fig, ax = plt.subplots(figsize=(8,8), dpi=300)
+            ax.plot(science_vars_dive[var_dive].values, dive.ctd_depth, c='r', label='Dive')
+            ax.plot(science_vars_climb[var_climb].values, climb.ctd_depth, c='b', label='Climb')
+            units = science_vars_dive[var_dive].attrs.get("units", "No units specified")
+            ax.invert_yaxis()
+            ax.set_xlabel(f'{var_dive} ({units})')
+            ax.set_ylabel('Depth (m)')
+            ax.set_title(f'Dive {dive_num} - {var_dive} vs Depth')
+            ax.legend()
+            ax.grid()
+            ax.set_facecolor('0.9')
+            fig.savefig(output_folder + f'{var_dive}.png')
+            plt.close()
+
+    for ds in datasets.values():
+        ds.close()
+
+sg_plots(files)
