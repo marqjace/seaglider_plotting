@@ -1,6 +1,7 @@
 # Various Seaglider Scripts
 * [sg_plots.py](#sg_plotspy)
 * [split_sg_profile.py](#split_sg_profilepy)
+* [sg_timeseries.py](#sg_timeseriespy)
 * [200kmAvg.ipynb](#200kmavgipynb)
 * [TH_line_bathymap.ipynb](#th_line_bathymapipynb)
 * [bathymetry_3D.ipynb](#bathymetry_3dipynb)
@@ -25,6 +26,9 @@ Creates basic plots on individual dive profiles and puts them into a figures dir
 
 ## split_sg_profile.py ##
 Function to split seaglider dive data into individual dive profiles.
+
+## sg_timeseries.py ##
+Function to create timeseries plots of each of the science variables.
 
 ## 200kmAvg.ipynb ##
 Demonstrates how to calculate the average inner 200km temperature anomaly for the TH line.
