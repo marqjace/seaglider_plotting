@@ -36,12 +36,18 @@ def sg_timeseries(filepath, figures_folder):
     temperature = ds.temperature
     salinity = ds.salinity
     oxygen = ds.aanderaa4831_dissolved_oxygen
+    wl700nm = ds.wlbbfl2_sig700nm_adjusted
+    wl695nm = ds.wlbbfl2_sig695nm_adjusted
+    wl460nm = ds.wlbbfl2_sig460nm_adjusted
 
     # Define the science variables
     sci_variables = {
         'temperature': temperature,
         'salinity': salinity,
-        'oxygen':oxygen
+        'oxygen':oxygen,
+        'wlbbfl2_sig700nm': wl700nm,
+        'wlbbfl2_sig695nm': wl695nm,
+        'wlbbfl2_sig460nm': wl460nm,
     }
 
     # Convert ctd_time  to datetime and as int64
@@ -57,10 +63,16 @@ def sg_timeseries(filepath, figures_folder):
     aa4831_time_dt = pd.to_datetime(ds.aa4831_time.values, unit='s', origin='unix')
     oxy_time_timestamps = aa4831_time_dt.astype(np.int64) // 10**9
 
-    # Interpolate ctd_depth onto aa4831_time
-    aa4831_depth = np.interp(aa4831_time_dt.astype(np.int64), ctd_time.astype(np.int64), ds.ctd_depth)
+    # Convert aa4831_time to the same format
+    wl_time_dt = pd.to_datetime(ds.wlbbfl2_time.values, unit='s', origin='unix')
+    wl_time_timestamps = wl_time_dt.astype(np.int64) // 10**9
 
-    # Time vs Depth Grid
+    # Interpolate ctd_depth onto aa4831_time_dt and wlbbfl2_time_dt
+    aa4831_depth = np.interp(aa4831_time_dt.astype(np.int64), ctd_time.astype(np.int64), ds.ctd_depth)
+    wl_depth = np.interp(wl_time_dt.astype(np.int64), ctd_time.astype(np.int64), ds.ctd_depth)
+
+    # Time vs Depth Gridding
+    # Dimension: ctd_data_point
     xn1, yn1 = int(num_days * 4), 200 # (The number of mission days multiplied by 4 dives per day (on average), 1000m / 5m per dive = 200 points)
     xmin1, xmax1 = ctd_time_timestamps.min(), ctd_time_timestamps.max()
     ymin1, ymax1 = 0, 1000
@@ -68,13 +80,21 @@ def sg_timeseries(filepath, figures_folder):
     ygrid1 = np.linspace(ymin1, ymax1, yn1)
     Xgrid1, Ygrid1 = np.meshgrid(xgrid1, ygrid1)
 
-    # Time vs Depth Grid (using the ctd_data_point dimension)
+    # Dimension: aa4831_data_point
     xn2, yn2 = int(num_days * 4), 200 # (The number of mission days multiplied by 4 dives per day (on average), 1000m / 5m per dive = 200 points)
     xmin2, xmax2 = oxy_time_timestamps.min(), oxy_time_timestamps.max()
     ymin2, ymax2 = 0, 1000
     xgrid2 = np.linspace(xmin2, xmax2, xn2)
     ygrid2 = np.linspace(ymin2, ymax2, yn2)
     Xgrid2, Ygrid2 = np.meshgrid(xgrid2, ygrid2)
+
+    # Dimension: wlbbfl2_data_point
+    xn3, yn3 = int(num_days * 4), 120 # (The number of mission days multiplied by 4 dives per day (on average), 1000m / 5m per dive = 200 points)
+    xmin3, xmax3 = wl_time_timestamps.min(), wl_time_timestamps.max()
+    ymin3, ymax3 = 0, 600
+    xgrid3 = np.linspace(xmin3, xmax3, xn3)
+    ygrid3 = np.linspace(ymin3, ymax3, yn3)
+    Xgrid3, Ygrid3 = np.meshgrid(xgrid3, ygrid3)
 
 
     # For loop to run through each variable in "sci_variables" and plot:
@@ -89,15 +109,38 @@ def sg_timeseries(filepath, figures_folder):
         var_directory = figures_folder + f'\{var_name}'
         os.makedirs(var_directory, exist_ok=True)  # exist_ok=True prevents errors if the folder already exists
 
-        # Choose specific cmap
+        # Variable-specific parameters
         if var_name == 'temperature':
             cmap = cmocean.cm.thermal
+            levels = np.arange(2, 18, 2)
+            ylim = plt.ylim(1000,0)
+
         elif var_name == 'salinity':
             cmap = cmocean.cm.haline
+            levels = np.arange(31.5, 35, 0.5)
+            ylim = plt.ylim(1000,0)
+
         elif var_name == 'oxygen':
             cmap = cmocean.cm.oxy
+            levels = np.arange(0,300,50)
+            ylim = plt.ylim(1000,0)
 
-        if var_name != 'oxygen':
+        elif var_name == 'wlbbfl2_sig700nm':
+            cmap = cmocean.cm.algae
+            levels = np.arange(0,var.values.max(),0.0002)
+            ylim = plt.ylim(600,0)
+
+        elif var_name == 'wlbbfl2_sig695nm':
+            cmap = cmocean.cm.algae
+            levels = np.arange(0,var.values.max(),0.25)
+            ylim = plt.ylim(600,0)
+
+        elif var_name == 'wlbbfl2_sig460nm':
+            cmap = cmocean.cm.algae
+            levels = np.arange(0,var.values.max(),0.5)
+            ylim = plt.ylim(600,0)
+
+        if var_name in ('temperature', 'salinity'):
             # Create an interpolated variables dataset
             interpolated_vars = {}
             interpolated_vars[f'{var_name}_interp'] = griddata((ctd_time_timestamps, ctd_depth.values), var, (Xgrid1, Ygrid1), method='linear')
@@ -122,10 +165,12 @@ def sg_timeseries(filepath, figures_folder):
             plt.grid(alpha=0.5)
             plt.savefig(f'{var_directory}/raw_{var_name}_mission.png')
             plt.close()
-            print(f'raw_{var_name}_mission.png created' )
+            print(f'    raw_{var_name}_mission.png created' )
 
-        else:
+        elif var_name == 'oxygen':
             interpolated_vars[f'{var_name}_interp'] = griddata((oxy_time_timestamps, aa4831_depth), var, (Xgrid2, Ygrid2), method='linear')
+            
+            # Define x and y
             x = Xgrid2
             y = Ygrid2
 
@@ -142,7 +187,29 @@ def sg_timeseries(filepath, figures_folder):
             plt.grid(alpha=0.5)
             plt.savefig(f'{var_directory}/raw_{var_name}_mission.png')
             plt.close()
-            print(f'raw_{var_name}_mission.png created' )
+            print(f'    raw_{var_name}_mission.png created' )
+
+        else:
+            interpolated_vars[f'{var_name}_interp'] = griddata((wl_time_timestamps, wl_depth), var, (Xgrid3, Ygrid3), method='linear')
+
+            # Define x and y
+            x = Xgrid3
+            y = Ygrid3
+
+            # Raw Scatter Plot
+            plt.figure(figsize=(10, 5), dpi=300)
+            plt.scatter(wl_time_dt, wl_depth, c=var, cmap=cmap)
+            plt.colorbar(label=f'{var.units}')
+            plt.gca().invert_yaxis()
+            plt.title(f'{time_coverage_start} - {time_coverage_end}')
+            plt.xlabel('Time')
+            plt.ylabel('Depth (m)')
+            plt.ylim(600,0)
+            plt.grid(alpha=0.5)
+            plt.clim(0, var.values.max())
+            plt.savefig(f'{var_directory}/raw_{var_name}_mission.png')
+            plt.close()
+            print(f'    raw_{var_name}_mission.png created' )
 
         # Apply a rolling mean to the data [20m by 3 days]
         rolling_var = {}
@@ -166,22 +233,16 @@ def sg_timeseries(filepath, figures_folder):
             clim = plt.clim(32.25,34.50)
         elif var_name == 'oxygen':
             clim = plt.clim(0,300)
+        else:
+            clim = None
         plt.clim(clim)
-        plt.ylim(1000,0)
+        plt.ylim(ylim)
         plt.grid(alpha=0.5)
         plt.savefig(f'{var_directory}/gridded_{var_name}_mission.png')
         plt.close()
-        print(f'gridded_{var_name}_mission.png created' )
+        print(f'    gridded_{var_name}_mission.png created' )
 
         # Gridded Contour Plot
-        # Define levels per variable
-        if var_name == 'temperature':
-            levels = np.arange(2, 18, 2)
-        elif var_name == 'salinity':
-            levels = np.arange(31.5, 35, 0.5)
-        elif var_name == 'oxygen':
-            levels = np.arange(0,300,50)
-
         plt.figure(figsize=(10, 5), dpi=300)
         contour = plt.contourf(x, y, rolling_var, levels=levels, cmap=cmap)
         contour_lines = plt.contour(x, y, rolling_var.values, levels=levels, colors='black', linewidths=0.5)
@@ -191,11 +252,11 @@ def sg_timeseries(filepath, figures_folder):
         plt.title(f'{time_coverage_start} - {time_coverage_end}')
         plt.xlabel('Time')
         plt.ylabel('Depth (m)')
-        plt.ylim(1000,0)
+        plt.ylim(ylim)
         plt.grid(alpha=0.5)
         plt.savefig(f'{var_directory}/contour_{var_name}_mission.png')
         plt.close()
-        print(f'contour_{var_name}_mission.png created' )
+        print(f'    contour_{var_name}_mission.png created' )
 
     print('Done!')
 
