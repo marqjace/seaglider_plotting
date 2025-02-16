@@ -11,18 +11,6 @@
 
 ## sg_plots.py ##
 Creates basic plots on individual dive profiles and puts them into a figures directory.
-- Temperature Profile
-- Salinity Profile
-- Conductivity Profile
-- T-S Diagram
-- Density Profile
-- Sigma-t Profile
-- Pressure Profile
-- Lat-lon Map
-- Buoyancy Profile
-- Heading Profile
-- Vertical Speed Profile
-- Glide Angle Profile
 
 ## split_sg_profile.py ##
 Function to split seaglider dive data into individual dive profiles.
