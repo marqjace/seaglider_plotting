@@ -13,16 +13,17 @@ os.makedirs(figures_folder, exist_ok=True)  # exist_ok=True prevents errors if t
 
 def sg_timeseries(filepath, figures_folder):
     """
-    Input:
-        Filepath (filepath to the timeseries data)
-        Figures_folder (folder where you want the figures to go (will create folder if it does not exist))
-
-    Output:
-        For each science variable it will produce a timeseries plot of:
-            - Raw scatter plot
-            - Gridded scatter plot (interpolated by [20m x 3 days])
-            - Gridded contour plot (interpolated by [20m x 3 days])
-
+    Creates directories of each of the science variables and plots several timeseries figures.
+    
+    Parameters:
+        filepath: Filepath to the timeseries data.
+        figures_folder: Folder where you want the figures to go (will create folder if it does not exist.
+        
+    Returns:
+        directories: Directories containing the following figures of each of the specified science variables:
+                     - Raw scatter plot
+                     - Gridded scatter plot (interpolated by [20m x 3days]
+                     - Gridded contour plot (interpolated by [20m x 3days]
     """
     # Open the dataset
     ds = xr.open_dataset(filepath)
