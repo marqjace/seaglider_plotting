@@ -5,6 +5,7 @@ import numpy as np
 from scipy.interpolate import griddata
 import pandas as pd
 import os
+import gsw
 
 # Load the timeseries data
 filepath = r"C:\Users\marqjace\seaglider\sg266\sg266_2024_10_21_TH_Line_timeseries.nc"
@@ -39,6 +40,7 @@ def sg_timeseries(filepath, figures_folder):
     wl700nm = ds.wlbbfl2_sig700nm_adjusted
     wl695nm = ds.wlbbfl2_sig695nm_adjusted
     wl460nm = ds.wlbbfl2_sig460nm_adjusted
+    density = gsw.density.rho(ds.absolute_salinity, ds.conservative_temperature, ds.ctd_pressure)
 
     # Define the science variables
     sci_variables = {
@@ -48,6 +50,7 @@ def sg_timeseries(filepath, figures_folder):
         'wlbbfl2_sig700nm': wl700nm,
         'wlbbfl2_sig695nm': wl695nm,
         'wlbbfl2_sig460nm': wl460nm,
+        'density': density,
     }
 
     # Convert ctd_time  to datetime and as int64
@@ -112,12 +115,17 @@ def sg_timeseries(filepath, figures_folder):
         # Variable-specific parameters
         if var_name == 'temperature':
             cmap = cmocean.cm.thermal
-            levels = np.arange(2, 18, 2)
+            levels = np.arange(2, 18, 1)
             ylim = plt.ylim(1000,0)
 
         elif var_name == 'salinity':
             cmap = cmocean.cm.haline
-            levels = np.arange(31.5, 35, 0.5)
+            levels = np.arange(31.5, 35, 0.25)
+            ylim = plt.ylim(1000,0)
+
+        elif var_name == 'density':
+            cmap = cmocean.cm.dense
+            levels = np.arange(1022,1033,1)
             ylim = plt.ylim(1000,0)
 
         elif var_name == 'oxygen':
@@ -140,7 +148,7 @@ def sg_timeseries(filepath, figures_folder):
             levels = np.arange(0,var.values.max(),0.5)
             ylim = plt.ylim(600,0)
 
-        if var_name in ('temperature', 'salinity'):
+        if var_name in ('temperature', 'salinity', 'density'):
             # Create an interpolated variables dataset
             interpolated_vars = {}
             interpolated_vars[f'{var_name}_interp'] = griddata((ctd_time_timestamps, ctd_depth.values), var, (Xgrid1, Ygrid1), method='linear')
@@ -152,7 +160,10 @@ def sg_timeseries(filepath, figures_folder):
             # Raw Scatter Plot
             plt.figure(figsize=(10, 5), dpi=300)
             plt.scatter(ctd_time, ctd_depth, c=var, cmap=cmap)
-            plt.colorbar(label=f'{var.units}')
+            if var_name == 'density':
+                plt.colorbar(label=f'kg/m')
+            else: 
+                plt.colorbar(label=f'{var.units}')
             plt.gca().invert_yaxis()
             plt.title(f'{time_coverage_start} - {time_coverage_end}')
             plt.xlabel('Time')
@@ -177,7 +188,10 @@ def sg_timeseries(filepath, figures_folder):
             # Raw Scatter Plot
             plt.figure(figsize=(10, 5), dpi=300)
             plt.scatter(aa4831_time_dt, aa4831_depth, c=var, cmap=cmap)
-            plt.colorbar(label=f'{var.units}')
+            if var_name == 'density':
+                plt.colorbar(label=f'kg/m')
+            else: 
+                plt.colorbar(label=f'{var.units}')
             plt.gca().invert_yaxis()
             plt.title(f'{time_coverage_start} - {time_coverage_end}')
             plt.xlabel('Time')
@@ -199,7 +213,10 @@ def sg_timeseries(filepath, figures_folder):
             # Raw Scatter Plot
             plt.figure(figsize=(10, 5), dpi=300)
             plt.scatter(wl_time_dt, wl_depth, c=var, cmap=cmap)
-            plt.colorbar(label=f'{var.units}')
+            if var_name == 'density':
+                plt.colorbar(label=f'kg/m')
+            else: 
+                plt.colorbar(label=f'{var.units}')
             plt.gca().invert_yaxis()
             plt.title(f'{time_coverage_start} - {time_coverage_end}')
             plt.xlabel('Time')
@@ -222,7 +239,10 @@ def sg_timeseries(filepath, figures_folder):
         # Gridded Scatter Plot
         plt.figure(figsize=(10, 5), dpi=300)
         plt.scatter(x, y, c=rolling_var.values, cmap=cmap)
-        plt.colorbar(label=f'{var.units}')
+        if var_name == 'density':
+            plt.colorbar(label=f'kg/m')
+        else: 
+            plt.colorbar(label=f'{var.units}')
         plt.gca().invert_yaxis()
         plt.title(f'{time_coverage_start} - {time_coverage_end}')
         plt.xlabel('Time')
@@ -231,6 +251,8 @@ def sg_timeseries(filepath, figures_folder):
             clim = plt.clim(4,16)
         elif var_name == 'salinity':
             clim = plt.clim(32.25,34.50)
+        elif var_name == 'density':
+            clim = plt.clim(1022,1032)
         elif var_name == 'oxygen':
             clim = plt.clim(0,300)
         else:
@@ -247,7 +269,10 @@ def sg_timeseries(filepath, figures_folder):
         contour = plt.contourf(x, y, rolling_var, levels=levels, cmap=cmap)
         contour_lines = plt.contour(x, y, rolling_var.values, levels=levels, colors='black', linewidths=0.5)
         plt.clabel(contour_lines, inline=True, fontsize=8, fmt='%1.1f')
-        plt.colorbar(contour, label=f'{var.units}')
+        if var_name == 'density':
+            plt.colorbar(contour, label=f'kg/m')
+        else: 
+            plt.colorbar(contour, label=f'{var.units}')
         plt.gca().invert_yaxis()
         plt.title(f'{time_coverage_start} - {time_coverage_end}')
         plt.xlabel('Time')
