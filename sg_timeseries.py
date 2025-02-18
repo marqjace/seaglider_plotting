@@ -15,6 +15,15 @@ os.makedirs(figures_folder, exist_ok=True)  # exist_ok=True prevents errors if t
 def sg_timeseries(filepath, figures_folder):
     """
     Creates directories of each of the science variables and plots several timeseries figures.
+
+    Current variables:
+    - Temperature
+    - Salinity
+    - Density
+    - Oxygen
+    - Backscatter
+    - Chlorophyll Fluorescence
+    - CDOM Fluorescence
     
     Parameters:
         filepath: Filepath to the timeseries data.
