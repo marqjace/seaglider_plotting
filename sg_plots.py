@@ -9,12 +9,12 @@ import glob
 import xarray as xr
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.interpolate import griddata
 from scipy.interpolate import RBFInterpolator
 from split_sg_profile import split_sg_profile
+from parse_log_file import parse_log_file
 
 # Open the filepath where the data is located
-filepath = r'C:/Users/marqjace/TH_line/deployments/oct_2024/transect1/'
+filepath = r'C:/Users/marqjace/seaglider/sg266/tmp/'
 os.makedirs(filepath, exist_ok=True)  # exist_ok=True prevents errors if the folder already exists
 
 # Specify which data files you want to open

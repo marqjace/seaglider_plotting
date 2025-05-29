@@ -8,8 +8,8 @@ import os
 import gsw
 
 # Load the timeseries data
-filepath = r"C:\Users\marqjace\seaglider\sg266\sg266_2024_10_21_TH_Line_timeseries.nc"
-figures_folder = r"C:\Users\marqjace\seaglider\sg266\figures"
+filepath = r"C:\Users\marqjace\TH_line\deployments\mar_2025\sg266_TH_Line_Mar_2025_timeseries.nc"
+figures_folder = r"C:\Users\marqjace\TH_line\deployments\mar_2025\figures"
 os.makedirs(figures_folder, exist_ok=True)  # exist_ok=True prevents errors if the folder already exists
 
 def sg_timeseries(filepath, figures_folder):
