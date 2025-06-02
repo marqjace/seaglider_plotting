@@ -49,7 +49,6 @@ def plot_internal_sensors(filepath):
     ax3 = ax.twinx()  # Create a third y-axis for internal pressure
     ax3.spines['right'].set_position(('outward', 60))  # Offset the third y-axis
     int_pres_plot = ax3.plot(dive_numbers, internal_pressure, linestyle='-', color='purple', label='Internal Pressure (psia)')
-    ax.invert_yaxis()  # Invert y-axis for depth
     ax.set_xlabel('Dive Number')
     ax.set_ylabel('Humidity (%)')
     ax2.set_ylabel('Temperature (°C)')
