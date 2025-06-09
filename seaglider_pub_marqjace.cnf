@@ -1,0 +1,9 @@
+{
+  "bs": {
+    "host": "seaglider.pub",
+    "username": "marqjace",
+    "publicKeyFile": "C:/Users/marqjace/.ssh/id_ed25519.pub",
+    "privateKeyFile": "C:/Users/marqjace/.ssh/id_ed25519",
+    "cnfFile": "seaglider_pub_marqjace.cnf"
+  }
+}
