@@ -35,8 +35,10 @@ def plot_bottom_depths(filepath):
             bottom_depth = bottom_depth[0] + bottom_depth[1]
             
             if 'ALTIM_BOTTOM_PING' not in log_parameters:
-                # Handle missing value: use a default, raise a warning, etc.
-                bottom_depth = np.nan  # or some sensible default
+                bottom_depth = np.nan
+            
+            # if bottom_depths[-1] < 1000 and 'ALTIM_BOTTOM_PING' not in log_parameters and len(bottom_depths) > 0:
+            #     bottom_depth = np.nan
 
             bottom_depths.append(bottom_depth)
             print(f"Parsing: {file}")
@@ -46,6 +48,7 @@ def plot_bottom_depths(filepath):
 
     plt.figure(figsize=(12, 8), dpi=300)
     plt.scatter(dive_numbers, bottom_depths, marker='o', linestyle='-', color=colors)
+    plt.plot(dive_numbers, bottom_depths)
     plt.gca().invert_yaxis()  # Invert y-axis for depth
     plt.ylim(1000, 0)  # Set y-axis limits to 0-1000m
     plt.grid(which='both', linestyle='--', linewidth=0.7)
@@ -57,5 +60,5 @@ def plot_bottom_depths(filepath):
     print(f"Saving figure: {os.path.join(filepath, 'bottom_depths_plot.png')}.")
 
 # Example usage
-filepath = r'C:\Users\marqjace\TH_line\deployments\mar_2025\transect4\logfiles'
+filepath = r'C:\Users\marqjace\TH_line\deployments\mar_2025\transect7\logfiles'
 plot_bottom_depths(filepath)
